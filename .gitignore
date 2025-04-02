@@ -4,6 +4,12 @@
 # Log file
 *.log
 
+target/
+
+.vscode/
+*.env
+*.log
+
 # BlueJ files
 *.ctxt
 
