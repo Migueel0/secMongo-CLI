@@ -8,9 +8,12 @@ import com.mongodb.client.MongoDatabase;
 
 public class MongoDBConnection {
 
-    public MongoDatabase connect(String host, int port) {
+    public static MongoDatabase connect(String host, int port,String username, String password) {
+        String authConnectionString = String.format("mongodb://%s:%s@%s:%d", username, password, host, port);
         String connectionString = String.format("mongodb://%s:%d", host, port);
-        MongoClient mongoClient = MongoClients.create(connectionString);
+
+        String uri = !username.isEmpty() && !password.isEmpty() ? authConnectionString : connectionString;
+        MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase database = null;
         try {
             database = mongoClient.getDatabase("admin");
