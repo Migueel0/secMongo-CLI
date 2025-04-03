@@ -11,4 +11,5 @@ public class CustomPromptProvider implements PromptProvider {
     public AttributedString getPrompt() {
         return new AttributedString("secMongo:> ");
     }
+    
 }

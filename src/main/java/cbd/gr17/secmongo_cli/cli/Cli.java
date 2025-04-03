@@ -6,21 +6,11 @@ import org.springframework.shell.standard.ShellOption;
 import cbd.gr17.secmongo_cli.db.MongoDBConnection;
 
 @ShellComponent()
-public class Cli implements CommandLineRunner {
+public class Cli{
 
-    final String initialMessage = """
-            -------------------------------------------------
-            Welcome to SecMongo CLI!
-            -------------------------------------------------
-            """;
+    
 
     private final MongoDBConnection mongoDBConnection = new MongoDBConnection();
-
-
-    @Override
-    public void run(String... args) throws Exception {
-        System.out.println(initialMessage);
-    }
 
 
     @ShellMethod(value = "Connection test to MongoDB", key = "connect")
