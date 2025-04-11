@@ -17,10 +17,10 @@ public class Cli {
     public void connect(
             @ShellOption(defaultValue = "localhost", help = "MongoDB host (default: localhost)") String host,
             @ShellOption(defaultValue = "27017", help = "MongoDB port (default: 27017)") int port,
-            @ShellOption(defaultValue = "", help = "MongoDB username") String username,
+            @ShellOption(defaultValue = "", help = "MongoDB user") String user,
             @ShellOption(defaultValue = "", help = "MongoDB password") String password) {
         try {
-            MongoDBConnection.connect(host, port, username, password);
+            MongoDBConnection.connect(host, port, user, password);
             System.out.println("Connected successfully");
         } catch (Exception e) {
             System.out.println("Connection failed: " + e.getMessage());
@@ -31,10 +31,10 @@ public class Cli {
     public void scan(
             @ShellOption(defaultValue = "localhost", help = "MongoDB host (default: localhost)") String host,
             @ShellOption(defaultValue = "27017", help = "MongoDB port (default: 27017)") int port,
-            @ShellOption(defaultValue = "", help = "MongoDB username") String username,
+            @ShellOption(defaultValue = "", help = "MongoDB user") String user,
             @ShellOption(defaultValue = "", help = "MongoDB password") String password) {
         try {
-            MongoDatabase database = MongoDBConnection.connect(host, port, username, password);
+            MongoDatabase database = MongoDBConnection.connect(host, port, user, password);
             VulnerabilityScanner.runSecurityChecks(database);
             System.out.println("Scann finished");
         } catch (Exception e) {
