@@ -75,7 +75,8 @@ public class Cli {
             @ShellOption(defaultValue = "") String password,
             @ShellOption(help = "Database name to connect to") String dbName,
             @ShellOption(help = "Collection name to monitor") String collectionName,
-            @ShellOption(defaultValue = "", help = "Optional path to export events to a log file") String exportPath) {
+            @ShellOption(defaultValue = "", help = "Optional path to export events to a log file") String exportPath,
+            @ShellOption(defaultValue = "",  help = "Optional filters: insert, update, delete, replace, invalidate, drop, rename, dropDatabase") String operationTypes) {
     
         try {
             MongoDatabase db = MongoDBConnection.connect(host, port, username, password, dbName);
@@ -83,7 +84,7 @@ public class Cli {
                 System.out.println("Could not connect to MongoDB.");
                 return;
             }
-            DatabaseMonitor.monitorCollection(db, collectionName, exportPath);
+            DatabaseMonitor.monitorCollection(db, collectionName, exportPath, operationTypes);
         } catch (Exception e) {
             System.out.println("Connection failed: " + e.getMessage());
         }
