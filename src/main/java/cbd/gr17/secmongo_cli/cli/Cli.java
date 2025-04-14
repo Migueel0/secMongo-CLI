@@ -8,6 +8,7 @@ import com.mongodb.client.MongoDatabase;
 
 import cbd.gr17.secmongo_cli.commands.DatabaseMonitor;
 import cbd.gr17.secmongo_cli.commands.DatabaseStats;
+import cbd.gr17.secmongo_cli.commands.SecurityReportGenerator;
 import cbd.gr17.secmongo_cli.commands.VulnerabilityScanner;
 import cbd.gr17.secmongo_cli.db.MongoDBConnection;
 
@@ -76,8 +77,8 @@ public class Cli {
             @ShellOption(help = "Database name to connect to") String dbName,
             @ShellOption(help = "Collection name to monitor") String collectionName,
             @ShellOption(defaultValue = "", help = "Optional path to export events to a log file") String exportPath,
-            @ShellOption(defaultValue = "",  help = "Optional filters: insert, update, delete, replace, invalidate, drop, rename, dropDatabase") String operationTypes) {
-    
+            @ShellOption(defaultValue = "", help = "Optional filters: insert, update, delete, replace, invalidate, drop, rename, dropDatabase") String operationTypes) {
+
         try {
             MongoDatabase db = MongoDBConnection.connect(host, port, username, password, dbName);
             if (db == null) {
@@ -89,6 +90,34 @@ public class Cli {
             System.out.println("Connection failed: " + e.getMessage());
         }
     }
-    
+
+    @ShellMethod(value = "Generate full MongoDB security audit report in md format", key = "report")
+    public void report(
+            @ShellOption(defaultValue = "localhost") String host,
+            @ShellOption(defaultValue = "27017") int port,
+            @ShellOption(defaultValue = "") String username,
+            @ShellOption(defaultValue = "") String password,
+            @ShellOption(defaultValue = "admin") String dbName,
+            @ShellOption(help = "Path to export the report") String exportPath) {
+
+        try {
+            MongoDatabase db = MongoDBConnection.connect(host, port, username, password, dbName);
+            MongoDatabase adminDb = MongoDBConnection.connect(host, port, username, password, "admin");
+
+            if (db == null) {
+                System.out.println("Could not connect to MongoDB.");
+                return;
+            }
+
+            String report = SecurityReportGenerator.generateReport(db, adminDb, dbName);
+            java.nio.file.Files.writeString(java.nio.file.Paths.get(exportPath), report);
+
+            System.out.println("Security report generated at: " + exportPath);
+
+        } catch (Exception e) {
+            System.out.println("Error generating report: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
 }
