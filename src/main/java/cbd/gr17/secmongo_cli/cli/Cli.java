@@ -41,6 +41,7 @@ public class Cli {
 
         try {
             MongoDatabase database = MongoDBConnection.connect(host, port, username, password, dbName);
+            VulnerabilityScanner.resetCounters();
             VulnerabilityScanner.runSecurityChecks(database);
             System.out.println("Scan finished");
         } catch (Exception e) {
@@ -109,6 +110,7 @@ public class Cli {
                 return;
             }
 
+            VulnerabilityScanner.resetCounters();
             String report = SecurityReportGenerator.generateReport(db, adminDb, dbName);
             java.nio.file.Files.writeString(java.nio.file.Paths.get(exportPath), report);
 

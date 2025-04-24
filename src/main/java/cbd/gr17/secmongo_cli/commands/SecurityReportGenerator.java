@@ -62,6 +62,7 @@ public class SecurityReportGenerator {
         })).append("```\n\n");
 
         report.append("## ✅ Final Summary\n\n");
+        VulnerabilityScanner.resetCounters();
         report.append("```\n").append(captureOutput(() -> VulnerabilityScanner.runSecurityChecks(database)))
                 .append("```\n");
 
