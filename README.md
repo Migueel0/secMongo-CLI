@@ -28,7 +28,7 @@
 ## 🚀 **Requisitos**
 
 - **Java**: Versión 21 o superior.
-- **MongoDB**: Versión 4.0 o superior.
+- **MongoDB**: Recomendad versión 8.0.0 o superior.
 - **Replica Set**: Requerido para monitoreo en tiempo real (`change streams`).
 - **Maven**: Para compilar y ejecutar el proyecto.
 
