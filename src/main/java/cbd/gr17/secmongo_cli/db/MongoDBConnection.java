@@ -18,7 +18,7 @@ public class MongoDBConnection {
         try {
             database = mongoClient.getDatabase(dbName);
             database.runCommand(new Document("ping", 1));
-            System.out.println("Connected to MongoDB server at " + host + ":" + port);
+            System.out.println("Connected to " +  dbName + " at " + host + ":" + port);
             return database;
         } catch (Exception e) {
             System.err.println("Failed to connect to MongoDB server: " + e.getMessage());
