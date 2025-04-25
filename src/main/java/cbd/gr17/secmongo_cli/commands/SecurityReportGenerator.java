@@ -28,38 +28,30 @@ public class SecurityReportGenerator {
 
         report.append("---\n\n");
 
-        report.append("## 🔐 Network & Access Configurations\n\n");
-        report.append("```\n").append(captureOutput(() -> {
-            VulnerabilityScanner.checkTLS(database);
-            VulnerabilityScanner.checkIPBinding(database);
-            VulnerabilityScanner.checkAuthentication(database);
-        })).append("```\n\n");
+        if (dbName.equals("admin")) {
+            report.append("## 🔐 Network & Access Configurations\n\n");
+            report.append("```\n").append(captureOutput(() -> {
+                VulnerabilityScanner.checkTLS(adminDb);
+                VulnerabilityScanner.checkIPBinding(adminDb);
+                VulnerabilityScanner.checkAuthentication(adminDb);
+                VulnerabilityScanner.checkEncryption(adminDb);
+                VulnerabilityScanner.serverVersionCheck(adminDb);
+                VulnerabilityScanner.checkDatabasePath(adminDb);
+                VulnerabilityScanner.checkAuditing(adminDb);
+            })).append("```\n\n");
 
-        report.append("## 👥 User & Role Checks\n\n");
-        report.append("```\n").append(captureOutput(() -> VulnerabilityScanner.checkUsersWithNoRoles(database)))
-                .append("```\n\n");
+            report.append("## 👥 User & Role Checks\n\n");
+            report.append("```\n").append(captureOutput(() -> VulnerabilityScanner.checkUsersWithNoRoles(adminDb)))
+                    .append("```\n\n");
+        } else {
+            report.append("## 👥 User & Role Checks\n\n");
+            report.append("```\n").append(captureOutput(() -> VulnerabilityScanner.checkUsersWithNoRoles(database)))
+                    .append("```\n\n");
 
-        report.append("## 🛡️ Injection & JS Execution\n\n");
-        report.append("```\n").append(captureOutput(() -> VulnerabilityScanner.scanAllCollections(database)))
-                .append("```\n\n");
-
-        report.append("## 🧪 Input Validation\n\n");
-        report.append("```\n").append(captureOutput(() -> VulnerabilityScanner.checkWireObjectCheck(database)))
-                .append("```\n\n");
-
-        report.append("## 📊 Collection & Indexes\n\n");
-        report.append("```\n").append(captureOutput(() -> {
-            VulnerabilityScanner.checkCollectionSizes(database);
-            VulnerabilityScanner.checkIndexes(database);
-            VulnerabilityScanner.checkTTLIndexes(database);
-            VulnerabilityScanner.checkCappedCollections(database);
-        })).append("```\n\n");
-
-        report.append("## ⚙️ Critical Configurations\n\n");
-        report.append("```\n").append(captureOutput(() -> {
-            VulnerabilityScanner.checkCriticalConfig(database);
-            VulnerabilityScanner.checkAuditLog(database);
-        })).append("```\n\n");
+            report.append("## 🛡️ Collection Scanner\n\n");
+            report.append("```\n").append(captureOutput(() -> VulnerabilityScanner.scanAllCollections(database)))
+                    .append("```\n\n");
+        }
 
         report.append("## ✅ Final Summary\n\n");
         VulnerabilityScanner.resetCounters();
