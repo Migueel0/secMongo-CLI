@@ -1,9 +1,12 @@
 package cbd.gr17.secmongo_cli.cli;
 
+import java.util.List;
+
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
 import cbd.gr17.secmongo_cli.commands.DatabaseMonitor;
@@ -37,13 +40,30 @@ public class Cli {
             @ShellOption(defaultValue = "27017") int port,
             @ShellOption(defaultValue = "") String username,
             @ShellOption(defaultValue = "") String password,
-            @ShellOption(defaultValue = "admin") String dbName) {
+            @ShellOption(defaultValue = "") String dbName) {
 
+        VulnerabilityScanner.resetCounters();
+        List<String> defaultDatases = List.of("local", "config");
         try {
-            MongoDatabase database = MongoDBConnection.connect(host, port, username, password, dbName);
-            VulnerabilityScanner.resetCounters();
-            VulnerabilityScanner.runSecurityChecks(database);
-            System.out.println("Scan finished");
+            if(dbName.isBlank()){
+                MongoClient mongoClient = MongoDBConnection.getMongoClient(host, port, username, password);
+                for(String db : mongoClient.listDatabaseNames()){
+                    if(!defaultDatases.contains(db)){
+                        MongoDatabase database = MongoDBConnection.connect(host, port, username, password, db);
+                        VulnerabilityScanner.runSecurityChecks(database);
+                    }
+                }
+            }
+            else{
+                MongoDatabase database = MongoDBConnection.connect(host, port, username, password, dbName);
+                VulnerabilityScanner.runSecurityChecks(database);
+            }
+            System.out.println("\nSecurity scan completed.");
+            System.out.println("--------------------------------------------------");
+            System.out.println("Total checks performed: " + VulnerabilityScanner.getTotalChecks());
+            System.out.println("Security mark: " + VulnerabilityScanner.getSuccessChecks() + "/" + VulnerabilityScanner.getTotalChecks());
+
+            System.out.println("Final mark: " + (VulnerabilityScanner.getSuccessChecks() * 100) / VulnerabilityScanner.getTotalChecks() + "%");
         } catch (Exception e) {
             System.out.println("Connection failed: " + e.getMessage());
         }
